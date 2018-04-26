@@ -6,7 +6,7 @@ def like_sgn(res):
 
 
 def learning():
-    pers = Perseptron(like_sgn)
+    pers = Perseptron(like_sgn, 2)
     examples = [[1, 1, 1],
                 [-1, 1, -1],
                 [1, -1, -1],
