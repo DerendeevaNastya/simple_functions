@@ -1,7 +1,12 @@
 from perseptron import Perseptron
 
+
+def like_sgn(res):
+    return 1 if res > -0.000001 else -1
+
+
 def learning():
-    pers = Perseptron()
+    pers = Perseptron(like_sgn)
     examples = [[1, 1, 1],
                 [-1, 1, -1],
                 [1, -1, -1],
