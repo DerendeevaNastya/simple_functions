@@ -1,19 +1,11 @@
 from perseptron import Perseptron
 from random import choice
-import math
+import actions
 
 examples = [[(1, 1), 1],
             [(0, 1), 1],
             [(1, 0), 1],
             [(0, 0), 0]]
-
-
-def like_sgn(res):
-    return 1 if res >= 0.5 else 0
-
-
-def S(x):
-    return 1 / (1 + math.exp(-x))
 
 
 def learn(pers):
@@ -29,7 +21,7 @@ def test(pers):
     print(pers.weights)
 
 if __name__ == "__main__":
-    pers = Perseptron(S, 2)
+    pers = Perseptron(actions.like_sgn, 2)
 
     learn(pers)
     test(pers)

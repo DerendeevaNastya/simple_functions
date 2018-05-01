@@ -1,20 +1,12 @@
 from for_XOR import Perseptron
 from random import choice
-import math
+import actions
 
 
 examples = [[(1, 1), 0],
             [(0, 1), 1],
             [(1, 0), 1],
             [(0, 0), 0]]
-
-
-def S(x):
-    return 1 / (1 + math.exp(-x))
-
-
-def like_sgn(res):
-    return 1 if res >= 0.5 else 0
 
 
 def sgn(number):
@@ -34,15 +26,15 @@ def sgn(number):
 class XorNetwork:
     def __init__(self):
         self.levels = []
-        self.levels.append([Perseptron(S, 2), Perseptron(S, 2)])
-        self.levels.append([Perseptron(S, 2)])
+        self.levels.append([Perseptron(actions.S, 2), Perseptron(actions.S, 2)])
+        self.levels.append([Perseptron(actions.S, 2)])
 
     def get_output(self, input_data):
-        res1 = like_sgn(self.levels[0][0].get_output(input_data))
-        res2 = like_sgn(self.levels[0][1].get_output(input_data))
+        res1 = actions.like_sgn(self.levels[0][0].get_output(input_data))
+        res2 = actions.like_sgn(self.levels[0][1].get_output(input_data))
         self.levels[0][0].axon = res1
         self.levels[0][1].axon = res2
-        return like_sgn(self.levels[1][0].get_output((res1, res2)))
+        return actions.like_sgn(self.levels[1][0].get_output((res1, res2)))
 
     def learning(self, X, y, result):
         delta10 = y - result
