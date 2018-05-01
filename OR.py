@@ -6,6 +6,7 @@ examples = [[(1, 1), 1],
             [(1, 0), 1],
             [(0, 0), 0]]
 
+
 def like_sgn(res):
     return 1 if res >= 0.5 else 0
 
