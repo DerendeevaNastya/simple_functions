@@ -38,14 +38,14 @@ class XorNetwork:
         self.levels.append([Perseptron(S, 2)])
 
     def get_output(self, input_data):
-        res1 = self.levels[0][0].get_output(input_data)
-        res2 = self.levels[0][1].get_output(input_data)
+        res1 = sgn(self.levels[0][0].get_output(input_data))
+        res2 = sgn(self.levels[0][1].get_output(input_data))
         self.levels[0][0].axon = res1
         self.levels[0][1].axon = res2
         return self.levels[1][0].get_output((res1, res2))
 
     def learning(self, X, y, result):
-        delta10 = y - result
+        delta10 = y - sgn(result)
 
         delta00 = delta10 * self.levels[1][0].weights[0]
         delta01 = delta10 * self.levels[1][0].weights[1]
@@ -64,10 +64,13 @@ def test(network):
 
 
 def learn(network):
-    for _ in range(10000):
+    for i in range(1000):
         X, y = choice(examples)
         result = network.get_output(X)
         network.learning(X, y, result)
+        #print(network.levels[0][0].weights)
+        #print(network.levels[0][1].weights)
+    #print(network.levels[1][0].weights)
 
 
 if __name__ == "__main__":
