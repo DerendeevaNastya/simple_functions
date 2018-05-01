@@ -12,7 +12,7 @@ def learn(pers):
     for _ in range(300):
         X, y = choice(examples)
         result = pers.get_output(X)
-        pers.correct_weight(X, y, result)
+        pers.correct_weight(X, y - result)
 
 def test(pers):
     for X, y in examples:

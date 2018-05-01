@@ -1,4 +1,4 @@
-from for_XOR import Perseptron
+from perseptron import Perseptron
 from random import choice
 import actions
 
