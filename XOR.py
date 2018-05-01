@@ -1,6 +1,6 @@
-from perseptron import Perseptron
+from for_XOR import Perseptron
 from random import choice
-
+import math
 
 
 examples = [[(1, 1), 0],
@@ -8,8 +8,14 @@ examples = [[(1, 1), 0],
             [(1, 0), 1],
             [(0, 0), 0]]
 
+
+def S(x):
+    return 1 / (1 + math.exp(-x))
+
+
 def like_sgn(res):
     return 1 if res >= 0.5 else 0
+
 
 def sgn(number):
     if number == 0:
@@ -28,38 +34,40 @@ def sgn(number):
 class XorNetwork:
     def __init__(self):
         self.levels = []
-        self.levels.append([Perseptron(like_sgn, 2), Perseptron(like_sgn, 2)])
-        self.levels.append([Perseptron(like_sgn, 2)])
-
+        self.levels.append([Perseptron(S, 2), Perseptron(S, 2)])
+        self.levels.append([Perseptron(S, 2)])
 
     def get_output(self, input_data):
-        res1 = self.levels[0][0].get_output((input_data[0], 1 - input_data[1]))
-        res2 = self.levels[0][1].get_output((1 - input_data[0], input_data[1]))
+        res1 = self.levels[0][0].get_output(input_data)
+        res2 = self.levels[0][1].get_output(input_data)
         self.levels[0][0].axon = res1
         self.levels[0][1].axon = res2
         return self.levels[1][0].get_output((res1, res2))
 
     def learning(self, X, y, result):
-        old_weight = self.levels[1][0].weights
-        tmpX = (self.levels[0][0].axon, self.levels[0][1].axon)
-        self.levels[1][0].correct_weight(tmpX, y, result)
-        new_weight = self.levels[1][0].weights
+        delta10 = y - result
 
-        self.levels[0][0].correct_weight(X, sgn(new_weight[0] - old_weight[0]), 0)
-        self.levels[0][1].correct_weight(X, sgn(new_weight[1] - old_weight[1]), 0)
+        delta00 = delta10 * self.levels[1][0].weights[0]
+        delta01 = delta10 * self.levels[1][0].weights[1]
+
+        self.levels[0][0].correct_weight(X, delta00)
+        self.levels[0][1].correct_weight(X, delta01)
+        self.levels[1][0].correct_weight(
+            (self.levels[0][0].axon, self.levels[0][1].axon),
+            delta10)
+
 
 def test(network):
     for X, y in examples:
         result = network.get_output(X)
         print("{0} {1} : {3}, correct {2}".format(*X, y, result))
 
+
 def learn(network):
-    for _ in range(100):
+    for _ in range(10000):
         X, y = choice(examples)
         result = network.get_output(X)
         network.learning(X, y, result)
-
-
 
 
 if __name__ == "__main__":
@@ -67,4 +75,3 @@ if __name__ == "__main__":
     
     learn(xor)
     test(xor)
-

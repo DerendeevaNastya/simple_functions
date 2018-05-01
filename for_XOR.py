@@ -14,7 +14,7 @@ class Perseptron:
         result = np.sum(input_data * self.weights)
         return self.activation(result)
 
-    def correct_weight(self, X, y, result):
-        delta = y - result
+    def correct_weight(self, X, delta):
         input_data = np.array(list(X) + [self.bias])
-        self.weights += input_data * self.epsilon * delta
+        derivatives = np.array([self.activation(x)*(1 - self.activation(x)) for x in input_data])
+        self.weights += input_data * self.epsilon * delta * derivatives
