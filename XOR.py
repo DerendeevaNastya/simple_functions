@@ -1,6 +1,7 @@
-from perseptron import Perseptron
 from random import choice
 import actions
+from layer import Layer
+import numpy as np
 
 
 examples = [[(1, 1), 0],
@@ -8,13 +9,6 @@ examples = [[(1, 1), 0],
             [(1, 0), 1],
             [(0, 0), 0]]
 
-
-def sgn(number):
-    if number == 0:
-        return 0
-    if number > 0:
-        return 1
-    return -1
 
 # (x or not y) and (not x or y)
 
@@ -25,28 +19,26 @@ def sgn(number):
 #  nY - p2 /
 class XorNetwork:
     def __init__(self):
-        self.levels = []
-        self.levels.append([Perseptron(actions.S, 2), Perseptron(actions.S, 2)])
-        self.levels.append([Perseptron(actions.S, 2)])
+        self.input_layer = Layer(2, actions.S, 2)
+        self.output_layer = Layer(1, actions.S, 2)
 
-    def get_output(self, input_data):
-        res1 = actions.like_sgn(self.levels[0][0].get_output(input_data))
-        res2 = actions.like_sgn(self.levels[0][1].get_output(input_data))
-        self.levels[0][0].axon = res1
-        self.levels[0][1].axon = res2
-        return actions.like_sgn(self.levels[1][0].get_output((res1, res2)))
+    def get_output(self, X):
+        input_result = self.input_layer.get_output(X)
+        output_result = self.output_layer.get_output(input_result)
+        return output_result[0]
 
-    def learning(self, X, y, result):
-        delta10 = y - result
+    def learning(self, y, result):
+        error2 = - (result - y) * result * (1 - result)
 
-        delta00 = delta10 * self.levels[1][0].weights[0]
-        delta01 = delta10 * self.levels[1][0].weights[1]
+        error1 = (self.output_layer.get_layer()[0].weights[:-1] *
+                  error2 *
+                  (1 - np.array(self.input_layer.last_result)) *
+                  np.array(self.input_layer.last_result))
 
-        self.levels[0][0].correct_weight(X, delta00)
-        self.levels[0][1].correct_weight(X, delta01)
-        self.levels[1][0].correct_weight(
-            (self.levels[0][0].axon, self.levels[0][1].axon),
-            delta10)
+
+        self.output_layer.learn([error2])
+        self.input_layer.learn(error1.tolist())
+
 
 
 def test(network):
@@ -56,17 +48,17 @@ def test(network):
 
 
 def learn(network):
-    for i in range(10000):
+    for _ in range(100000):
         X, y = choice(examples)
         result = network.get_output(X)
-        network.learning(X, y, result)
-        #print(network.levels[0][0].weights)
-        #print(network.levels[0][1].weights)
-    #print(network.levels[1][0].weights)
+        network.learning(y, result)
 
 
 if __name__ == "__main__":
     xor = XorNetwork()
-    
+
     learn(xor)
     test(xor)
+    #print(xor.input_layer.get_layer()[0].weights)
+    #print(xor.input_layer.get_layer()[1].weights)
+    #print(xor.output_layer.get_layer()[0].weights)
