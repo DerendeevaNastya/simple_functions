@@ -12,9 +12,6 @@ class Layer:
     def get_layer(self):
         return self.layer
 
-    def get_deltas(self):
-        return self.deltas
-
     def get_output(self, array):
         self.last_input = array
         result = [pers.get_output(array) for pers in self.layer]

@@ -5,7 +5,7 @@ import numpy as np
 
 class Perseptron:
     def __init__(self, activation, dendrites_count):
-        random.seed(3)
+        #random.seed(1000)
         self.weights = np.array([random.random() for _ in range(dendrites_count + 1)])
         self.epsilon = 0.2
         self.activation = activation
