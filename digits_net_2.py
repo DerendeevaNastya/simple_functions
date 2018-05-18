@@ -5,7 +5,7 @@ import actions
 
 
 def get_sum_deltas(i, layer_deltas, layer_pers):
-    weights_i = np.array([layer_pers[j].weights[i] for j in range(len(layer_pers))])
+    weights_i = layer_pers[:, i]
     return np.dot(weights_i, layer_deltas)
 
 

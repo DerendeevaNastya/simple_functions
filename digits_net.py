@@ -5,7 +5,7 @@ import actions
 
 
 def get_sum_deltas(i, layer_deltas, layer_pers):
-    weights_i = np.array([layer_pers[j].weights[i] for j in range(len(layer_pers))])
+    weights_i = layer_pers[:, i]
     return np.dot(weights_i, layer_deltas)
 
 
@@ -18,8 +18,8 @@ def get_deltas_from_prev_layer(size, prev_layer_deltas, prev_layer, layer):
 
 class digitNetwork:
     def __init__(self):
-        self.input_layer = Layer(49, actions.S, 784)
-        self.hidden_layer = Layer(16, actions.S, 49)
+        self.input_layer = Layer(16, actions.S, 784)
+        self.hidden_layer = Layer(16, actions.S, 16)
         self.output_layer = Layer(10, actions.S, 16)
 
     def get_output(self, data):
@@ -32,7 +32,7 @@ class digitNetwork:
     def learn(self, y, result):
         output_deltas = (result - y) * result * (1 - result)
         hidden_deltas = get_deltas_from_prev_layer(16, output_deltas, self.output_layer, self.hidden_layer)
-        input_deltas = get_deltas_from_prev_layer(49, hidden_deltas, self.hidden_layer, self.input_layer)
+        input_deltas = get_deltas_from_prev_layer(16, hidden_deltas, self.hidden_layer, self.input_layer)
 
         self.input_layer.learn(input_deltas)
         self.hidden_layer.learn(hidden_deltas)
@@ -79,7 +79,7 @@ def test(net, data):
         corrects[data[row][0]] += 1
         if row % 1000 == 0:
             print(row)
-            print(result)
+            #print(result)
     print((corrects, results))
 
 

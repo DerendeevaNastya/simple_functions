@@ -30,11 +30,10 @@ class XorNetwork:
     def learning(self, y, result):
         error2 = - (result - y) * result * (1 - result)
 
-        error1 = (self.output_layer.get_layer()[0].weights[:-1] *
+        error1 = (self.output_layer.layer[0, :-1] *
                   error2 *
                   (1 - np.array(self.input_layer.last_result)) *
                   np.array(self.input_layer.last_result))
-
 
         self.output_layer.learn([error2])
         self.input_layer.learn(error1.tolist())
